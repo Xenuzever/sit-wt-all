@@ -147,7 +147,7 @@ public class WebDriverConfig {
                 // geckodriver is not stable yet as of 2016/10
                 // so we doesn't support neigther selenium 3 nor firefox 48.x
                 // higher
-                // webDriverInstaller.installGeckoDriver();
+                webDriverInstaller.installGeckoDriver();
 
                 webDriver = firefoxManager.startWebDriver(capabilities);
         }
