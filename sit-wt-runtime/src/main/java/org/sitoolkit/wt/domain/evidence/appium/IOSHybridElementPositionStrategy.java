@@ -5,23 +5,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.sitoolkit.wt.domain.evidence.ElementPositionStrategy;
 import org.sitoolkit.wt.domain.evidence.selenium.ElementPositionSupport2;
-
-import io.appium.java_client.AppiumDriver;
+import org.sitoolkit.wt.mobile.infra.MobileDriverUtil;
 
 public class IOSHybridElementPositionStrategy implements ElementPositionStrategy {
 
     @SuppressWarnings("unchecked")
     @Override
     public void init(ElementPositionSupport2 eps, WebDriver driver) {
-        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
 
-        String context = appiumDriver.getContext();
+        String context = MobileDriverUtil.getDriverContext(driver);
 
-        appiumDriver.context("NATIVE_APP");
-        WebElement baseElement = appiumDriver.findElementByClassName("UIAWebView");
+        MobileDriverUtil.setContext(driver, "NATIVE_APP");
+        WebElement baseElement = MobileDriverUtil.findElementByClassName(driver, "UIAWebView");
         eps.setBasePosition(baseElement.getLocation());
 
-        appiumDriver.context(context);
+        MobileDriverUtil.setContext(driver, context);
 
     }
 

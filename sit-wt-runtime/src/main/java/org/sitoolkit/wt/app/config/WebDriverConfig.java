@@ -49,18 +49,19 @@ import org.sitoolkit.wt.infra.selenium.WebDriverInstaller;
 import org.sitoolkit.wt.infra.selenium.WebDriverMethodInterceptor;
 import org.sitoolkit.wt.infra.selenium.WebElementExceptionChecker;
 import org.sitoolkit.wt.infra.selenium.WebElementExceptionCheckerImpl;
+import org.sitoolkit.wt.mobile.app.config.MobileConfig;
+import org.sitoolkit.wt.mobile.domain.MobileDriverManager;
+import org.sitoolkit.wt.mobile.infra.MobileDriverUtil;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.ios.IOSDriver;
-
 @Configuration
+@Import({ MobileConfig.class })
 public class WebDriverConfig {
 
     private static final SitLogger LOG = SitLoggerFactory.getLogger(WebDriverConfig.class);
@@ -77,8 +78,8 @@ public class WebDriverConfig {
     @Bean
     @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, scopeName = "thread")
     public RemoteWebDriver innerWebDriver(PropertyManager pm, WebDriverCloser closer,
-            WebDriverInstaller webDriverInstaller, FirefoxManager firefoxManager)
-            throws MalformedURLException {
+            WebDriverInstaller webDriverInstaller, FirefoxManager firefoxManager,
+            MobileDriverManager mobileDriverManager) throws MalformedURLException {
         RemoteWebDriver webDriver = null;
 
         String driverType = StringUtils.defaultString(pm.getDriverType());
@@ -142,12 +143,13 @@ public class WebDriverConfig {
 
             case "android":
                 LOG.info("webdriver.android", pm.getAppiumAddress());
-                webDriver = new AndroidDriver<>(pm.getAppiumAddress(), capabilities);
+                webDriver = mobileDriverManager.getAndroidDriver(pm.getAppiumAddress(),
+                        capabilities);
                 break;
 
             case "ios":
                 LOG.info("webdriver.ios", pm.getAppiumAddress());
-                webDriver = new IOSDriver<>(pm.getAppiumAddress(), capabilities);
+                webDriver = mobileDriverManager.getIOSDriver(pm.getAppiumAddress(), capabilities);
                 break;
 
             default: // include firefox
@@ -161,7 +163,7 @@ public class WebDriverConfig {
 
         webDriver.manage().timeouts().implicitlyWait(pm.getImplicitlyWait(), TimeUnit.MILLISECONDS);
 
-        if (!(webDriver instanceof AppiumDriver<?>)) {
+        if (!(MobileDriverUtil.checkAppiumDriverInstance((WebDriver) webDriver))) {
             webDriver.manage().window().setPosition(new Point(pm.getWindowLeft() + windowShiftLeft,
                     pm.getWindowTop() + windowShiftTop));
             windowShiftTop += pm.getWindowShiftTop();

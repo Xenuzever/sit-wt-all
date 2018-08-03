@@ -21,7 +21,7 @@
       <artifactId>controlsfx</artifactId>
       <version>8.40.14</version>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>org.sitoolkit.wt</groupId>
       <artifactId>sit-wt-runtime</artifactId>
       <version>3.0-SNAPSHOT</version>
@@ -31,18 +31,6 @@
       <artifactId>selenium-java</artifactId>
       <version>${selenium.version}</version>
       <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>io.appium</groupId>
-      <artifactId>java-client</artifactId>
-      <version>${appium.version}</version>
-      <optional>true</optional>
-      <exclusions>
-        <exclusion>
-          <artifactId>gson</artifactId>
-          <groupId>com.google.code.gson</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
   <parent>
@@ -55,7 +43,6 @@
     <threadCountClasses>1</threadCountClasses>
     <threadCountMethods>1</threadCountMethods>
     <selenium.version>3.12.0</selenium.version>
-    <appium.version>6.0.0</appium.version>
   </properties>
 
   <!-- Build Settings -->

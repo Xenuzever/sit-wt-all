@@ -6,11 +6,11 @@ import javax.annotation.Resource;
 
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.sitoolkit.wt.domain.operation.ScreenshotOperation;
 import org.sitoolkit.wt.infra.log.SitLogger;
 import org.sitoolkit.wt.infra.log.SitLoggerFactory;
-
-import io.appium.java_client.AppiumDriver;
+import org.sitoolkit.wt.mobile.infra.MobileDriverUtil;
 
 public class HybridScreenshotOperation implements ScreenshotOperation {
 
@@ -20,25 +20,23 @@ public class HybridScreenshotOperation implements ScreenshotOperation {
             .getLogger(HybridScreenshotOperation.class);
 
     @Resource
-    AppiumDriver<?> driver;
+    WebDriver driver;
 
     @Override
     public File get() {
         if (driver instanceof TakesScreenshot) {
 
-            String context = driver.getContext();
+            String context = MobileDriverUtil.getDriverContext(driver);
             if (CONTEXT_NATIVE_APP.equals(context)) {
                 context = null;
             } else {
-                driver.context(CONTEXT_NATIVE_APP);
+                MobileDriverUtil.setContext(driver, CONTEXT_NATIVE_APP);
             }
 
             File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 
             if (context != null) {
-                // 何故かdriver.getContextHandles()を実行してからcontextを設定しないと例外が発生する。
-                driver.getContextHandles();
-                driver.context(context);
+                MobileDriverUtil.setContext(driver, context);
             }
 
             return file;

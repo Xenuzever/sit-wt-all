@@ -3,9 +3,8 @@ package org.sitoolkit.wt.domain.operation.appium;
 import org.sitoolkit.wt.domain.operation.selenium.OpenOperation;
 import org.sitoolkit.wt.domain.operation.selenium.SeleniumOperationContext;
 import org.sitoolkit.wt.domain.testscript.TestStep;
+import org.sitoolkit.wt.mobile.infra.MobileDriverUtil;
 import org.springframework.stereotype.Component;
-
-import io.appium.java_client.AppiumDriver;
 
 @Component
 public class StartAppOperation extends OpenOperation {
@@ -13,11 +12,10 @@ public class StartAppOperation extends OpenOperation {
     @Override
     public void execute(TestStep testStep, SeleniumOperationContext ctx) {
 
-        if (seleniumDriver instanceof AppiumDriver<?>) {
-            AppiumDriver<?> appiumDriver = (AppiumDriver<?>) seleniumDriver;
-            for (String contextHandle : appiumDriver.getContextHandles()) {
+        if (MobileDriverUtil.checkAppiumDriverInstance(seleniumDriver)) {
+            for (String contextHandle : MobileDriverUtil.getContextHandles(seleniumDriver)) {
                 if (contextHandle.startsWith("WEBVIEW")) {
-                    appiumDriver.context(contextHandle);
+                    MobileDriverUtil.setContext(seleniumDriver, contextHandle);
                 }
             }
         } else {
