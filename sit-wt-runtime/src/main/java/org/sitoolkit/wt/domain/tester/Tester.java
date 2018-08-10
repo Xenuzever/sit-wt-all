@@ -156,6 +156,10 @@ public class Tester {
         Evidence evidence = em.createEvidence(current.getScriptName(), caseNo);
         TestStep testStep = null;
 
+        if (debug.isInterrupted()) {
+            result.setInterrupted(debug.isInterrupted());
+            return result;
+        }
         try {
             debug.start();
             do {
@@ -197,6 +201,8 @@ public class Tester {
                 }
 
             } while (debug.next());
+
+            result.setInterrupted(debug.isInterrupted());
 
         } catch (Exception e) {
             evidence.addLogRecord(LogRecord.create(log, LogLevelVo.ERROR, testStep,

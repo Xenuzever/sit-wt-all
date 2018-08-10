@@ -99,17 +99,17 @@ public class DebugSupport {
 
             if (nextIndex >= testScript.getTestStepCount()) {
                 sendCaseEnd();
-                return current.isContinued();
+                return current.isContinued() && !isInterrupted();
             }
 
             current.setCurrentIndex(nextIndex);
             current.setTestStep(current.getTestScript().getTestStep(nextIndex));
             sendStepStart();
 
-            return true;
+            return !isInterrupted();
         } else {
             sendCaseEnd();
-            return current.isContinued();
+            return current.isContinued() && !isInterrupted();
         }
     }
 
@@ -276,6 +276,10 @@ public class DebugSupport {
         cmd = new DebugCommand(CommandKey.EXPORT, "");
     }
 
+    public void exit() {
+        cmd = new DebugCommand(CommandKey.EXIT, "");
+    }
+
     public void pause() {
         LOG.info("test.pause");
         if (pm.isCli()) {
@@ -320,6 +324,10 @@ public class DebugSupport {
 
     public void start() {
         sendStepStart();
+    }
+
+    public boolean isInterrupted() {
+        return (cmd != null && cmd.key.equals(CommandKey.EXIT));
     }
 
     private void sendStepPausing(int nextStepIndex) {

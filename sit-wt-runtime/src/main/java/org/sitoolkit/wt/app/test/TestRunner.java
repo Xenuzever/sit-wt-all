@@ -261,7 +261,8 @@ public class TestRunner {
             if (result != null) {
                 LOG.info("test.result", caseNo,
                         result.isSuccess() ? MessageManager.getMessage("success")
-                                : MessageManager.getMessage("failure"));
+                                : result.isInterrupted() ? MessageManager.getMessage("interrupted")
+                                        : MessageManager.getMessage("failure"));
             }
         }
 

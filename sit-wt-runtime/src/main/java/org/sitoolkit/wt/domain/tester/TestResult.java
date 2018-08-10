@@ -27,6 +27,11 @@ public class TestResult {
     private Throwable errorCause;
 
     /**
+     * 中断操作の有無
+     */
+    private boolean interrupted;
+
+    /**
      * テスト実行が失敗した理由のメッセージ文字列を構築します。
      *
      * @return テスト実行が失敗した理由のメッセージ文字列
@@ -55,12 +60,12 @@ public class TestResult {
      * @return
      */
     public boolean isSuccess() {
-        return errorCause == null && verifyExceptions.isEmpty();
+        return errorCause == null && verifyExceptions.isEmpty() && !interrupted;
     }
 
     /**
      * 検証失敗の例外を追加します。
-     * 
+     *
      * @param ve
      *            検証失敗の例外
      */
@@ -79,7 +84,7 @@ public class TestResult {
 
     /**
      * テスト実行失敗の原因となった例外を取得します。
-     * 
+     *
      * @return テスト実行失敗の原因となった例外
      */
     public Throwable getErrorCause() {
@@ -88,12 +93,31 @@ public class TestResult {
 
     /**
      * テスト実行失敗の原因となった例外を設定します。
-     * 
+     *
      * @param errorCause
      *            テスト実行失敗の原因となった例外
      */
     public void setErrorCause(Throwable errorCause) {
         this.errorCause = errorCause;
+    }
+
+    /**
+     * テストが中断させられた場合にtrueを取得します。
+     *
+     * @return 中断操作の有無
+     */
+    public boolean isInterrupted() {
+        return interrupted;
+    }
+
+    /**
+     * テストを中断させたかどうかを設定します。
+     *
+     * @param interrupted
+     *            中断操作の有無
+     */
+    public void setInterrupted(boolean interrupted) {
+        this.interrupted = interrupted;
     }
 
 }

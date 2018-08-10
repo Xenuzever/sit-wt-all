@@ -65,7 +65,7 @@ public class TestService {
 
                 DebugSupport debugSupport = appCtx.getBean(DebugSupport.class);
                 debugSupport.setListener(debugListener);
-                
+
                 runner.runScript(appCtx, params.getTargetScripts(), params.isParallel(), true);
                 callback.callback(0);
             } catch (Exception e) {
@@ -106,9 +106,7 @@ public class TestService {
     }
 
     public void stopTest(String sessionId) {
-        ConfigurableApplicationContext appCtx = ctxMap.get(sessionId);
-        appCtx.close();
-        ctxMap.remove(sessionId);
+        getDebugSupport(sessionId).exit();
     }
 
     public void destroy() {
