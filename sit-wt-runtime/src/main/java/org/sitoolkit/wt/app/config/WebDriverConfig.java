@@ -41,6 +41,7 @@ import org.openqa.selenium.safari.SafariOptions;
 import org.sitoolkit.wt.domain.tester.TestEventListener;
 import org.sitoolkit.wt.domain.tester.selenium.TestEventListenerWebDriverImpl;
 import org.sitoolkit.wt.infra.PropertyManager;
+import org.sitoolkit.wt.infra.Wrapper;
 import org.sitoolkit.wt.infra.firefox.FirefoxManager;
 import org.sitoolkit.wt.infra.log.SitLogger;
 import org.sitoolkit.wt.infra.log.SitLoggerFactory;
@@ -50,6 +51,7 @@ import org.sitoolkit.wt.infra.selenium.WebDriverMethodInterceptor;
 import org.sitoolkit.wt.infra.selenium.WebElementExceptionChecker;
 import org.sitoolkit.wt.infra.selenium.WebElementExceptionCheckerImpl;
 import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -75,7 +77,7 @@ public class WebDriverConfig {
     }
 
     @Bean
-    @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, scopeName = "thread")
+    @Scope("thread")
     public RemoteWebDriver innerWebDriver(PropertyManager pm, WebDriverCloser closer,
             WebDriverInstaller webDriverInstaller, FirefoxManager firefoxManager)
             throws MalformedURLException {
@@ -178,9 +180,9 @@ public class WebDriverConfig {
         return webDriver;
     }
 
-    @Bean(destroyMethod = "")
-    @Primary
-    public RemoteWebDriver webDriver(RemoteWebDriver webDriver,
+    @Bean
+    @Scope("thread")
+    public RemoteWebDriver realWebDriver(@Qualifier("innerWebDriver") RemoteWebDriver webDriver,
             WebElementExceptionChecker checker) {
         ProxyFactory proxyFactory = new ProxyFactory();
         proxyFactory.setTargetClass(webDriver.getClass());
@@ -193,6 +195,20 @@ public class WebDriverConfig {
         LOG.debug("webdriver.proxy", proxy);
 
         return (RemoteWebDriver) proxy;
+    }
+
+    @Bean(destroyMethod = "")
+    @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, scopeName = "thread")
+    @Primary
+    public RemoteWebDriver webDriver(@Qualifier("realWebDriver") RemoteWebDriver webDriver) {
+        return webDriver;
+    }
+
+    @Bean
+    @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, scopeName = "thread")
+    public Wrapper<WebDriver> webDriverWrapper(
+            @Qualifier("realWebDriver") RemoteWebDriver webDriver) {
+        return new Wrapper<WebDriver>(webDriver);
     }
 
     @Bean

@@ -4,7 +4,9 @@ import javax.annotation.Resource;
 
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.sitoolkit.wt.domain.evidence.ScreenshotTaker;
+import org.sitoolkit.wt.infra.Wrapper;
 
 import io.appium.java_client.AppiumDriver;
 
@@ -13,13 +15,14 @@ public class HybridScreenshotTaker extends ScreenshotTaker {
     private static final String CONTEXT_NATIVE_APP = "NATIVE_APP";
 
     @Resource
-    AppiumDriver<?> driver;
+    Wrapper<WebDriver> seleniumDriverWrapper;
 
     @Resource
     TakesScreenshot takesScreenshot;
 
     @Override
     public String getAsData() {
+        AppiumDriver<?> driver = (AppiumDriver<?>) seleniumDriverWrapper.get();
         String context = driver.getContext();
         if (CONTEXT_NATIVE_APP.equals(context)) {
             context = null;
