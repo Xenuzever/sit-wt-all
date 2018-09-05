@@ -127,7 +127,7 @@
       </build>
       <properties>
         <build.profile>include</build.profile>
-        <build.classifier>pc</build.classifier>
+        <build.classifier>mobile</build.classifier>
       </properties>
     </profile>
     <profile>
@@ -142,7 +142,7 @@
       </build>
       <properties>
         <build.profile>exclude</build.profile>
-        <build.classifier>mobile</build.classifier>
+        <build.classifier>pc</build.classifier>
       </properties>
     </profile>
   </profiles>
