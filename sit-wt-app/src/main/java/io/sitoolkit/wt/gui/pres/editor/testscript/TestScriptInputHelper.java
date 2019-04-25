@@ -33,6 +33,7 @@ public class TestScriptInputHelper {
     private static final ReadOnlyCellType READ_ONLY_TYPE = new ReadOnlyCellType();
     private static final DisabledCellType DISABLED_TYPE = new DisabledCellType();
     private static final OkCancelCellType OK_CANCEL_TYPE = new OkCancelCellType();
+    private static final BooleanCellType BOOLEAN_TYPE = new BooleanCellType();
     private static final SpreadsheetCellType.ListType SCREENSHOT_TYPE = SpreadsheetCellType
             .LIST(ScreenshotTiming.getLabels());
 
@@ -120,6 +121,8 @@ public class TestScriptInputHelper {
         switch (dataTypes.get(0)) {
             case "ok_cancel":
                 return OK_CANCEL_TYPE.createCell(rowIndex, colIndex, ROW_SPAN, COL_SPAN, value);
+            case "execution":
+                return BOOLEAN_TYPE.createCell(rowIndex, colIndex, ROW_SPAN, COL_SPAN, value);
             case "na":
                 return buildDisabledCell(rowIndex, colIndex);
             default:
@@ -178,6 +181,9 @@ public class TestScriptInputHelper {
                     COL_SPAN, value);
         } else if (type instanceof NormalStringCellType) {
             return ((NormalStringCellType) type).createCell(rowIndex, colIndex, ROW_SPAN, COL_SPAN,
+                    value);
+        } else if (type instanceof BooleanCellType) {
+            return ((BooleanCellType) type).createCell(rowIndex, colIndex, ROW_SPAN, COL_SPAN,
                     value);
         } else {
             LOG.warnMsg("Illegal operation for " + type);
