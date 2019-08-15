@@ -52,6 +52,7 @@
     <threadCountClasses>1</threadCountClasses>
     <threadCountMethods>1</threadCountMethods>
     <finalName.mobile>${project.artifactId}-${project.version}-mobile</finalName.mobile>
+    <moditect.modulePath>${project.build.directory}/modules</moditect.modulePath>
   </properties>
 
   <!-- Build Settings -->
@@ -101,12 +102,81 @@
       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
         <configuration>
           <mainClass>sit.wt.app/io.sitoolkit.wt.gui.pres.SitWtApplication</mainClass>
           <release>${maven.compiler.target}</release>
+          <jmodsPath>${moditect.modulePath}</jmodsPath>
+          <launcher>hellofx</launcher>
+          <jlinkImageName>hello</jlinkImageName>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.moditect</groupId>
+        <artifactId>moditect-maven-plugin</artifactId>
+        <version>1.0.0.Beta2</version>
+        <configuration>
+          <outputDirectory>${moditect.modulePath}</outputDirectory>
+          <overwriteExistingFiles>true</overwriteExistingFiles>
+          <modulePath>
+            <path>${moditect.modulePath}</path>
+          </modulePath>
+          <modules>
+            <module>
+              <artifact>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.4</version>
+              </artifact>
+              <moduleInfo></moduleInfo>
+            </module>
+            <module>
+              <artifact>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.5</version>
+              </artifact>
+              <moduleInfo></moduleInfo>
+            </module>
+            <module>
+              <artifact>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>3.141.59</version>
+              </artifact>
+              <moduleInfo></moduleInfo>
+            </module>
+            <module>
+              <artifact>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.3</version>
+              </artifact>
+              <moduleInfo></moduleInfo>
+            </module>
+
+            <module>
+              <artifact>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.21</version>
+              </artifact>
+              <additionalDependencies>
+                <dependency>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-api</artifactId>
+                  <version>1.7.21</version>
+                </dependency>
+              </additionalDependencies>
+              <moduleInfo></moduleInfo>
+            </module>
+
+          </modules>
+        </configuration>
+
+      </plugin>
+
     </plugins>
   </build>
 
