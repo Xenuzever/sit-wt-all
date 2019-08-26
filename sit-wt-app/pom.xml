@@ -52,38 +52,13 @@
     <threadCountClasses>1</threadCountClasses>
     <threadCountMethods>1</threadCountMethods>
     <finalName.mobile>${project.artifactId}-${project.version}-mobile</finalName.mobile>
+    <javafx.version>11.0.1</javafx.version>
+    <jpackager.path>jdk-11.0.4+11/bin</jpackager.path>
   </properties>
 
   <!-- Build Settings -->
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.1.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <appendAssemblyId>false</appendAssemblyId>
-          <archive>
-            <index>true</index>
-            <manifest>
-              <mainClass>io.sitoolkit.wt.gui.pres.SitWtApplication</mainClass>
-              <useUniqueVersions>true</useUniqueVersions>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -103,9 +78,86 @@
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.2</version>
         <configuration>
-          <mainClass>sit.wt.app/io.sitoolkit.wt.gui.pres.SitWtApplication</mainClass>
+          <mainClass>io.sitoolkit.wt.gui.pres.SitWtApplication</mainClass>
           <release>${maven.compiler.target}</release>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${project.build.directory}/libs</outputDirectory>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-libs</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/libs</outputDirectory>
+              <includeScope>runtime</includeScope>
+              <excludeGroupIds>org.openjfx</excludeGroupIds>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-modules</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/mods</outputDirectory>
+              <includeScope>runtime</includeScope>
+              <includeGroupIds>org.openjfx</includeGroupIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- jpackage -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+          <execution>
+            <id>create-package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>${jpackager.path}/jpackager.exe</executable>
+              <workingDirectory>${project.build.directory}</workingDirectory>
+              <longModulepath>false</longModulepath> <!-- fix for https://github.com/mojohaus/exec-maven-plugin/issues/75 -->
+              <environmentVariables>
+                <JAVA_HOME>${java.home}</JAVA_HOME>
+              </environmentVariables>
+              <arguments>
+                <argument>create-image</argument>
+                <argument>--verbose</argument>
+                <argument>--output</argument>
+                <argument>package</argument>
+                <argument>--module</argument>
+                <argument>io.sitoolkit.wt.gui.pres/io.sitoolkit.wt.gui.pres.SitWtApplication</argument>
+                <argument>--module-path</argument>
+                <argument>${java.home}/jmods;${project.build.directory}/mods;${project.build.directory}/libs;${project.build.outputDirectory}</argument>
+                <argument>--strip-native-commands</argument>
+                <argument>--identifier</argument>
+                <argument>io.sitoolkit.wt.gui.pres</argument>
+                <argument>--name</argument>
+                <argument>SitWtApp</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

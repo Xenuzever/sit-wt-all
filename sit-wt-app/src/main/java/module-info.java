@@ -1,4 +1,4 @@
-module sit.wt.app {
+module io.sitoolkit.wt.gui.pres {
   requires java.xml;
   requires jdk.unsupported;
   requires java.sql;
